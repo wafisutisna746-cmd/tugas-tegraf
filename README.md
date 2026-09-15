@@ -78,6 +78,10 @@ The algorithm starts at vertex A (the first vertex encountered in the file) and 
 
 
 
+### Kruskal's
+<img width="422" height="888" alt="image" src="https://github.com/user-attachments/assets/83b8e007-0b42-4c2b-964d-9c8ed1b25467" />
+
+<img width="182" height="345" alt="image" src="https://github.com/user-attachments/assets/3d4d1b66-6e48-4d1d-86cf-9d707cc6a8c9" />
 
 
 

@@ -20,7 +20,14 @@ Prim’s algorithm is a Greedy algorithm like Kruskal's algorithm. This algorith
 Because it only ever compares crossing edges and always takes the smallest one, Prim's algorithm can never form a cycle. a vertex is only ever added once, so an edge to an already-included vertex is simply never selected.
 
 ### Kruskal's Algorithm
+Kruskal's algorithm is also a Greedy algorithm, but unlike Prim's which grows a single tree outward from one starting node, Kruskal's algorithm looks at the whole graph at once and decides, edge by edge, whether to include it.
 
+- The algorithm starts by sorting all edges in the graph in increasing order of weight.
+- It treats every vertex as its own separate tree at first, tracked using a Union-Find (Disjoint Set Union) structure.
+- It goes through the sorted edges one by one, adding an edge to the MST only if its two endpoints currently belong to different trees. If they already belong to the same tree, the edge is skipped.
+- The algorithm stops once exactly (V − 1) edges have been added, where V is the number of vertices.
+
+Because an edge is only ever added when its two endpoints sit in different trees, Kruskal's algorithm can never form a cycle. An edge that would connect two vertices already in the same tree is always rejected by the Union-Find check.
 
 ### Boruvka's Algorithm
 

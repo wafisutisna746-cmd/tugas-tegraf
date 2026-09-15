@@ -17,6 +17,8 @@ Prim’s algorithm is a Greedy algorithm like Kruskal's algorithm. This algorith
 - The idea is to maintain two sets of vertices. The first set contains the vertices already included in the MST, and the other set contains the vertices not yet included.
 - At every step, it considers all the edges that connect the two sets and picks the minimum weight edge from these edges. After picking the edge, it moves the other endpoint of the edge to the set containing MST. 
 
+Because it only ever compares crossing edges and always takes the smallest one, Prim's algorithm can never form a cycle. a vertex is only ever added once, so an edge to an already-included vertex is simply never selected.
+
 ### Kruskal's Algorithm
 
 
@@ -24,13 +26,43 @@ Prim’s algorithm is a Greedy algorithm like Kruskal's algorithm. This algorith
 
 
 ## Prerequisites
-
+For algorithms written in C:
+- A C compiler
+- No external libraries are required, the program only uses the C standard library
+- Works on Linux, macOS, and Windows
 
 ## Instructions
+
+### Prim's
+
+1. Make sure prims.c and input.txt are in the same folder.
+
+2. Compile:
+``
+gcc prim.c -o p
+``
+
+3. Run, passing the input file as an argument:
+``
+./p input.txt
+``
+
+4. To test with a different graph, edit input.txt (or point to another file) using the format:
+```
+VERTEX1 VERTEX2 WEIGHT
+```
+One edge per line. Vertices are single uppercase letters (A–Z). Lines starting with # are treated as comments and ignored.
+
 
 
 ## Results
 
+### Prim's
+<img width="510" height="216" alt="image" src="https://github.com/user-attachments/assets/905cb1cf-91fc-46de-8ad6-f41b2f076a76" />
+
+<img width="340" height="306" alt="image" src="https://github.com/user-attachments/assets/58cc273b-eeb9-436f-8125-6a5009b8690c" />
+
+The algorithm starts at vertex A (the first vertex encountered in the file) and grows the tree by always picking the cheapest edge leaving the current tree, arriving at a Minimum Spanning Tree of total weight 32
 
 
 

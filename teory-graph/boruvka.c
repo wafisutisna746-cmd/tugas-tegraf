@@ -95,7 +95,7 @@ void run_boruvka(int skip_node) {
             Edge e = edges[cheapest[c]];
             int set_u = find(e.u);
             int set_v = find(e.v);
-            if (set_u == set_v) continue; /* already merged earlier this round */
+            if (set_u == set_v) continue; 
 
             printf("  Component of %-3s merges via edge %s-%s (weight %d)\n",
                    labels[c], labels[e.u], labels[e.v], e.w);

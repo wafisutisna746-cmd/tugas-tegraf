@@ -47,13 +47,11 @@ For algorithms written in C:
 
 ## Instructions
 
-### Prim's
-
-1. Make sure prims.c and input.txt are in the same folder.
+1. Make sure [algorithm-name].c and input.txt are in the same folder.
 
 2. Compile:
 ``
-gcc prim.c -o p
+gcc [algorithm-name].c -o p
 ``
 
 3. Run, passing the input file as an argument:

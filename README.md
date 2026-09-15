@@ -22,7 +22,7 @@ Because it only ever compares crossing edges and always takes the smallest one, 
 ### Kruskal's Algorithm
 
 
-### []'s Algorithm
+### Boruvka's Algorithm
 
 
 ## Prerequisites

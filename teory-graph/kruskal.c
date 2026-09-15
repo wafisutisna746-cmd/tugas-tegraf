@@ -2,135 +2,153 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_N 100
-#define MAX_M 200
+#define MAX_EDGES 100
+#define MAX_VERTICES 50
 
-int N, M;
-char labels[MAX_N][32];
-
+// Structure to represent an edge
 typedef struct {
-    int u, v, w;
+    char u;
+    char v;
+    int weight;
 } Edge;
 
-Edge edges[MAX_M];
-int parent[MAX_N], rnk[MAX_N];
+// Disjoint Set Union (DSU) structure
+typedef struct {
+    int parent[MAX_VERTICES];
+    int rank[MAX_VERTICES];
+} DSU;
 
-void read_graph(const char *path) {
-    FILE *f = fopen(path, "r");
-    if (!f) {
-        fprintf(stderr, "Could not open %s\n", path);
-        exit(1);
+// Initialize DSU
+void initDSU(DSU *dsu, int n) {
+    for (int i = 0; i < n; i++) {
+        dsu->parent[i] = i;
+        dsu->rank[i] = 0;
+    }
+}
+
+// Find operation with path compression
+int findParent(DSU *dsu, int node) {
+    if (dsu->parent[node] != node) {
+        dsu->parent[node] = findParent(dsu, dsu->parent[node]);
+    }
+    return dsu->parent[node];
+}
+
+// Union operation by rank
+int unionSets(DSU *dsu, int u, int v) {
+    int rootU = findParent(dsu, u);
+    int rootV = findParent(dsu, v);
+
+    if (rootU == rootV) {
+        return 0; // Cycle detected
     }
 
-    fscanf(f, "%d", &N);
-    for (int i = 0; i < N; i++) fscanf(f, "%s", labels[i]);
-    fscanf(f, "%d", &M);
-
-    for (int i = 0; i < M; i++)
-        fscanf(f, "%d %d %d", &edges[i].u, &edges[i].v, &edges[i].w);
-
-    fclose(f);
-}
-
-int cmp_edge(const void *a, const void *b) {
-    return ((Edge *)a)->w - ((Edge *)b)->w;
-}
-
-int find(int x) {
-    while (parent[x] != x) {
-        parent[x] = parent[parent[x]]; /* path compression */
-        x = parent[x];
+    if (dsu->rank[rootU] < dsu->rank[rootV]) {
+        dsu->parent[rootU] = rootV;
+    } else if (dsu->rank[rootU] > dsu->rank[rootV]) {
+        dsu->parent[rootV] = rootU;
+    } else {
+        dsu->parent[rootV] = rootU;
+        dsu->rank[rootU]++;
     }
-    return x;
+    return 1; // Successfully joined
 }
 
-int union_sets(int a, int b) {
-    a = find(a);
-    b = find(b);
-    if (a == b) return 0; /* already connected -> would create a cycle */
-    if (rnk[a] < rnk[b]) { int t = a; a = b; b = t; }
-    parent[b] = a;
-    if (rnk[a] == rnk[b]) rnk[a]++;
-    return 1;
+// Comparator function to sort edges in ascending order of weight
+int compareEdges(const void *a, const void *b) {
+    Edge *e1 = (Edge *)a;
+    Edge *e2 = (Edge *)b;
+    return e1->weight - e2->weight;
 }
 
-/* Remove edges touching a failed node by marking weight = -1 (sentinel) */
-void fail_node(int node) {
-    for (int i = 0; i < M; i++)
-        if (edges[i].u == node || edges[i].v == node)
-            edges[i].w = -1;
-    printf("[simulation] Node %s marked unreachable (its edges disabled)\n\n", labels[node]);
-}
-
-void fail_edge(int u, int v) {
-    for (int i = 0; i < M; i++) {
-        if ((edges[i].u == u && edges[i].v == v) ||
-            (edges[i].u == v && edges[i].v == u)) {
-            edges[i].w = -1;
+// Helper function to get or assign an integer ID for a vertex label
+int getVertexIndex(char name, char vertices[], int *vertexCount) {
+    for (int i = 0; i < *vertexCount; i++) {
+        if (vertices[i] == name) {
+            return i;
         }
     }
-    printf("[simulation] Edge %s-%s marked unusable\n\n", labels[u], labels[v]);
+    vertices[*vertexCount] = name;
+    (*vertexCount)++;
+    return *vertexCount - 1;
 }
 
-void run_kruskal(int skip_node) {
-    for (int i = 0; i < N; i++) { parent[i] = i; rnk[i] = 0; }
-
-    qsort(edges, M, sizeof(Edge), cmp_edge);
-
-    int total_cost = 0, edges_used = 0;
-
-    printf("Step | Edge considered | Weight | Result\n");
-    printf("------------------------------------------\n");
-
-    for (int i = 0; i < M; i++) {
-        if (edges[i].w == -1) continue;             /* disabled edge */
-        if (edges[i].u == skip_node || edges[i].v == skip_node) continue;
-
-        int accepted = union_sets(edges[i].u, edges[i].v);
-        printf("%4d | %s-%-10s | %6d | %s\n",
-               i + 1,
-               labels[edges[i].u], labels[edges[i].v],
-               edges[i].w,
-               accepted ? "added" : "skipped (cycle)");
-
-        if (accepted) {
-            total_cost += edges[i].w;
-            edges_used++;
-        }
-    }
-
-    printf("------------------------------------------\n");
-    printf("Total MST cost: %d\n", total_cost);
-
-    int expected_edges = (skip_node == -1) ? N - 1 : N - 2;
-    if (edges_used < expected_edges) {
-        printf("WARNING: graph became disconnected — only %d edges could be added "
-               "(needed %d).\n", edges_used, expected_edges);
-    }
-}
-
-int main(int argc, char *argv[]) {
-    if (argc < 2) {
-        fprintf(stderr, "Usage: %s <input.txt> [--fail-edge u v | --fail-node n]\n", argv[0]);
+int main() {
+    FILE *file = fopen("input.txt", "r");
+    if (file == NULL) {
+        printf("Error: Could not open input.txt\n");
+        printf("Make sure input.txt is located in the same directory.\n");
         return 1;
     }
 
-    read_graph(argv[1]);
+    Edge edges[MAX_EDGES];
+    int edgeCount = 0;
 
-    int skip_node = -1;
-    for (int i = 2; i < argc; i++) {
-        if (strcmp(argv[i], "--fail-edge") == 0 && i + 2 < argc) {
-            fail_edge(atoi(argv[i + 1]), atoi(argv[i + 2]));
-            i += 2;
-        } else if (strcmp(argv[i], "--fail-node") == 0 && i + 1 < argc) {
-            skip_node = atoi(argv[i + 1]);
-            fail_node(skip_node);
-            i += 1;
+    char vertices[MAX_VERTICES];
+    int vertexCount = 0;
+
+    // Read edges from file: <node1> <node2> <weight>
+    while (fscanf(file, " %c %c %d", &edges[edgeCount].u, &edges[edgeCount].v, &edges[edgeCount].weight) == 3) {
+        getVertexIndex(edges[edgeCount].u, vertices, &vertexCount);
+        getVertexIndex(edges[edgeCount].v, vertices, &vertexCount);
+        edgeCount++;
+        if (edgeCount >= MAX_EDGES) break;
+    }
+    fclose(file);
+
+    printf("=========================================\n");
+    printf("           KRUSKAL'S ALGORITHM           \n");
+    printf("=========================================\n");
+    printf("Total Vertices: %d\n", vertexCount);
+    printf("Total Edges   : %d\n\n", edgeCount);
+
+    // Step 1: Sort all edges in non-decreasing order of weight
+    qsort(edges, edgeCount, sizeof(Edge), compareEdges);
+
+    printf("--- Sorted Edges by Weight ---\n");
+    for (int i = 0; i < edgeCount; i++) {
+        printf("%d. %c - %c : %d\n", i + 1, edges[i].u, edges[i].v, edges[i].weight);
+    }
+    printf("\n");
+
+    // Step 2: Initialize DSU
+    DSU dsu;
+    initDSU(&dsu, vertexCount);
+
+    Edge mst[MAX_VERTICES];
+    int mstEdgeCount = 0;
+    int totalWeight = 0;
+
+    // Step 3: Iterate through sorted edges and apply Kruskal's algorithm
+    printf("--- Kruskal's Step-by-Step Selection ---\n");
+    for (int i = 0; i < edgeCount; i++) {
+        int uIdx = getVertexIndex(edges[i].u, vertices, &vertexCount);
+        int vIdx = getVertexIndex(edges[i].v, vertices, &vertexCount);
+
+        if (unionSets(&dsu, uIdx, vIdx)) {
+            mst[mstEdgeCount++] = edges[i];
+            totalWeight += edges[i].weight;
+            printf("Edge %c - %c (Weight: %d) -> ADDED to MST\n", edges[i].u, edges[i].v, edges[i].weight);
+        } else {
+            printf("Edge %c - %c (Weight: %d) -> REJECTED (Forms cycle)\n", edges[i].u, edges[i].v, edges[i].weight);
+        }
+
+        // An MST always has exactly (V - 1) edges
+        if (mstEdgeCount == vertexCount - 1) {
+            break;
         }
     }
 
-    printf("Kruskal's Algorithm\n\n");
-    run_kruskal(skip_node);
+    // Step 4: Display MST Results
+    printf("\n=========================================\n");
+    printf("       MINIMUM SPANNING TREE (MST)       \n");
+    printf("=========================================\n");
+    for (int i = 0; i < mstEdgeCount; i++) {
+        printf("  %c - %c  |  Weight: %d\n", mst[i].u, mst[i].v, mst[i].weight);
+    }
+    printf("-----------------------------------------\n");
+    printf("Total Minimum Weight: %d\n", totalWeight);
+    printf("=========================================\n");
 
     return 0;
 }

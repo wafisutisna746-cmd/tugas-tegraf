@@ -85,7 +85,7 @@ The algorithm starts at vertex A (the first vertex encountered in the file) and 
 
 <img width="182" height="345" alt="image" src="https://github.com/user-attachments/assets/3d4d1b66-6e48-4d1d-86cf-9d707cc6a8c9" />
 
-The algorithm sorts all edges in ascending order and greedily adds the smallest edge that does not create a cycle until all vertices are connected, arriving at a Minimum Spanning Tree of total weight 32
+The algorithm sorts all edges in ascending order and greedily adds the smallest edge that does not create a cycle until all vertices are connected, arriving at a Minimum Spanning Tree of total weight 32 (A little help from Gemini for the code)
 
 
 ### Borůvka’s

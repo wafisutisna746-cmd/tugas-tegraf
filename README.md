@@ -29,8 +29,15 @@ Kruskal's algorithm is also a Greedy algorithm, but unlike Prim's which grows a 
 
 Because an edge is only ever added when its two endpoints sit in different trees, Kruskal's algorithm can never form a cycle. An edge that would connect two vertices already in the same tree is always rejected by the Union-Find check.
 
-### Boruvka's Algorithm
+### Borůvka’s Algorithm
+Borůvka’s algorithm is a Greedy algorithm like Prim's and Kruskal's algorithm. This algorithm starts with each vertex as an individual component and repeatedly connects each component using its cheapest outgoing edge.
 
+The algorithm starts with an empty spanning tree, where each vertex is initially its own separate component.
+At every step, each component finds the minimum weight edge that connects it to another component.
+These minimum-weight edges are added to the MST, causing multiple components to merge together.
+The process is repeated until all vertices belong to a single component.
+
+Because each component always chooses its cheapest outgoing edge, Borůvka's algorithm follows a greedy approach. It also avoids cycles because edges that connect vertices already belonging to the same component are not selected.
 
 ## Prerequisites
 For algorithms written in C:

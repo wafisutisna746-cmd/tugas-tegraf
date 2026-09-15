@@ -121,7 +121,7 @@ void run_boruvka(int skip_node) {
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
-        fprintf(stderr, "Usage: %s <graph.txt> [--fail-edge u v | --fail-node n]\n", argv[0]);
+        fprintf(stderr, "Usage: %s <input.txt> [--fail-edge u v | --fail-node n]\n", argv[0]);
         return 1;
     }
 

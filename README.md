@@ -86,6 +86,13 @@ The algorithm starts at vertex A (the first vertex encountered in the file) and 
 The algorithm sorts all edges in ascending order and greedily adds the smallest edge that does not create a cycle until all vertices are connected, arriving at a Minimum Spanning Tree of total weight 32
 
 
+### Borůvka’s
+<img width="422" height="250" alt="Screenshot 2026-09-15 at 21 44 14" src="https://github.com/user-attachments/assets/4762425b-8eb4-43c2-9668-6dfd20b02641" />
+
+<img width="182" height="309" alt="Screenshot 2026-09-15 at 21 45 38" src="https://github.com/user-attachments/assets/8aae0c33-83a4-4389-a011-475e8c8c05a8" />
+
+The algorithm starts with each vertex as a separate component and repeatedly finds the cheapest edge connecting each component to another component
+
 
 
 
